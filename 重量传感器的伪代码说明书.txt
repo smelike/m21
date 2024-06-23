@@ -1,0 +1,86 @@
+读取稳定的重量值
+
+
+波特率 19200
+
+默认通讯格式：19200,n,8,1
+
+
+指令格式：模块地址+功能代码+数据+CRC16校验
+
+ 如：01 03 00 50 00 02 c4 1a,  01 模块地址，03 (读寄存器)功能代码，0050 - 寄存器起始位置，00 02 - 寄存器数量，c41a CRC16校验
+
+功能代码：01 -> 
+
+ 皮重(084)
+ 指令格式：01 10 00 54 00 02 04 00 00 00 00 64 F6 8B（假设皮重为100）
+
+
+皮重值;范围:-8000000~8000000;写入0x7fffffff执行自动去皮
+
+当设备称重的物品有包装时，如果我们只需要称重物品自身的重量，就要把包装物作为皮重预去除。可以把包装实物直接放在称台上，然后去皮，写入0x7fffffff执行自动去皮。
+如果包装不便分开，而且已知包装的重量，则可以通过发送指令把皮重重量输入称重设备，这个就是所谓的数字去皮。
+
+注意事项：
+通电时，传感器会进行自动置零操作。如果称台上有货物，则零点会被设置为负值。
+
+读取指令：010300500002c41a
+返回结果：
+
+执行串口读取后，获取到的返回字节数据里，第 3、4、5、6字节都重量数据值。
+
+respBytes = serial.execute_readweight()
+weightBytes = respBytes[3:7]
+
+获取到的字节数据，需要转换成为以 kg 为单位的，有两位小数的十进制数。
+
+注意：要检测数据是否是补码。
+
+重量值，必须要大于最小重量值 0.03kg，才是有效的重量值。
+
+
+
+在过货时间内，即光耦1被遮挡，进入读取重量的串口返回，格式化返回的数据，进行排序和递归检测重量值是否稳定。
+
+转换为 10 进制的重量数据，升序排序后，以 weight_sort_data.txt 保存到当前目录。
+
+
+检测重量数据是否稳定：
+
+"""
+        重量减去平均值测量稳定性
+        :param weights:[]:list
+        :param average_weight:重量平均值
+        :param precision:稳定性精度界限
+        :return:0 or 平均值
+        """
+        count = len(weights)
+        for index, number in enumerate(weights):
+            if index == count - 1:
+                continue
+            if weights[index] - weights[index + 1] > precision:
+                return False
+        return True
+		
+		
+ """
+        拿到稳定的测量值，采用滑动窗口的形式
+        :param weights: []:list
+        :return: 0 or 平均值
+        """
+        try:
+            count = int(sys_data.web_api.config.get('weight_stable_count'))
+            iterations = int(sys_data.web_api.config.get('weight_stable_iteration_count'))
+            precision = sys_data.web_api.config.get('weight_precision')
+            for i in range(iterations):
+                target_weights = weights[i:i + count]
+                average_weight = sum(target_weights) / len(target_weights)
+                if self.is_stable(target_weights, average_weight, precision):
+                    return average_weight
+            fn.logger(f"拿重量稳定值失败", level='error', r_path=sys_data.r_path)
+            return 0
+        except Exception as e:
+            fn.logger(f"拿重量稳定值处理程序失败：{e}", level='error', r_path=sys_data.r_path)
+            return 0
+
+

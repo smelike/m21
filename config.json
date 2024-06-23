@@ -1,0 +1,7 @@
+{
+
+	"serial_port": "COM8",
+	"baud_rate":  19200,
+	"timeout": 0.1
+	
+}
