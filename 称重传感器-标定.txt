@@ -75,4 +75,4 @@ HTML 页面：
 	
 	localhost:3098/index 首页
 	
-	localhost:3098/
+	localhost:3098/digital
