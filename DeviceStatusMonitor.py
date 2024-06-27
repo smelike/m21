@@ -86,7 +86,7 @@ class DeviceStatusMonitor:
         self.logger.info("DeviceStatusMonitor object deleted")
 
 # Usage example:
-config_path = "path/to/device_config.json"
+config_path = "./device_config.json"
 device_monitor = DeviceStatusMonitor(config_path)
 if device_monitor.connect():
     device_monitor.monitor_status(interval=60)
