@@ -1,0 +1,6 @@
+{
+	"name": "device_config",
+	"port": "com12",
+	"baudrate": "19200",
+	"timeout": 0.1
+}
