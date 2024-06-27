@@ -1,6 +1,6 @@
-为了提高代码的效率和可读性，可以使用面向对象编程（OOP）将功能封装在类中。以下是重新设计的代码，使用类、面向对象编程、日志方法、以及封装的串口操作函数：
+# 为了提高代码的效率和可读性，可以使用面向对象编程（OOP）将功能封装在类中。以下是重新设计的代码，使用类、面向对象编程、日志方法、以及封装的串口操作函数：
 
-```python
+# ```python
 import copy
 import json
 import os
@@ -9,8 +9,8 @@ from pathlib import Path
 
 import serial
 import serial.tools.list_ports
-from common import fn, data_parse, sys_data
-from device import crc_16
+# from common import fn, data_parse, sys_data
+# from device import crc_16
 
 class SerialManager:
     def __init__(self):
