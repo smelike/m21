@@ -98,10 +98,11 @@ class DeviceStatusMonitor:
         self.disconnect()
         self.logger.info("DeviceStatusMonitor object deleted")
 
-# Usage example:
-config_path = "./device_config.json"
-device_monitor = DeviceStatusMonitor(config_path)
-if device_monitor.connect():
-    device_monitor.monitor_status(interval=0.03)
-else:
-    print("Failed to connect to the device.")
+if __name__ == "main":
+    # Usage example:
+    config_path = "./device_config.json"
+    device_monitor = DeviceStatusMonitor(config_path)
+    if device_monitor.connect():
+        device_monitor.monitor_status(interval=0.03)
+    else:
+        print("Failed to connect to the device.")

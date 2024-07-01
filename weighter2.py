@@ -3,7 +3,8 @@ import time
 import json
 from pathlib import Path
 import statistics
-import DeviceStatusMonitor
+import threading
+from DeviceStatusMonitor import DeviceStatusMonitor
 
 
 class WeightSensor:
@@ -203,6 +204,15 @@ class WeightSensor:
             self.logger("Failed to read division value or weight unit.")
             return None
 
+    
+    def start_monitoring(self):
+        threading.Thread(target=self.monitor_device_status, daemon=True).start()
+
+    def monitor_device_status(self):
+        config_path = "./device_config.json"
+        device_monitor = DeviceStatusMonitor(config_path)
+        device_monitor.monitor_status(interval=0.03)
+        
     def close(self):
         if self.serial and self.serial.is_open:
             self.serial.close()
@@ -221,14 +231,17 @@ config_path = "./config.json"
 weight_sensor = WeightSensor(config_path)
 
 if device_monitor.connect():
+    duration = 3000
     # device_monitor.monitor_status(interval=0.03)
-    status = device_monitor.read_device_status()
-    print(status)
+    end = time.time() + 3
+    while time.time() < end:
+        status = device_monitor.read_device_status()
+    # print(status)
     weight_sensor.sample_weight(3000)
 else:
     print("Failed to connect to the device.")
 
-exit(909090)
+# exit(909090)
 if device_monitor.read_device_status() == '01':
     weight_sensor.sample_weight(3)
 
