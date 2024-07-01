@@ -83,11 +83,11 @@ class WeightSensor:
 
 if __name__ == "main":
 
-# Usage example:
-config_path = "path/to/config.json"
-weight_sensor = WeightSensor(config_path)
-if weight_sensor.connect():
-    weight = weight_sensor.read_weight()
-    print(f"Measured weight: {weight}")
-else:
-    print("Failed to connect to the weight sensor.")
+    # Usage example:
+    config_path = "./config.json"
+    weight_sensor = WeightSensor(config_path)
+    if weight_sensor.connect():
+        weight = weight_sensor.read_weight()
+        print(f"Measured weight: {weight}")
+    else:
+        print("Failed to connect to the weight sensor.")
