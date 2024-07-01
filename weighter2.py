@@ -205,6 +205,7 @@ class WeightSensor:
             return None
 
     
+    # 使用线程去监听设备状态，避开堵塞重量数据的读取
     def start_monitoring(self):
         threading.Thread(target=self.monitor_device_status, daemon=True).start()
 
