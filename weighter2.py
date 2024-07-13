@@ -6,7 +6,6 @@ import statistics
 import threading
 from DeviceStatusMonitor import DeviceStatusMonitor
 
-
 class WeightSensor:
     # 分度值
     DIVISION_MAP = {
@@ -203,7 +202,6 @@ class WeightSensor:
         else:
             self.logger("Failed to read division value or weight unit.")
             return None
-
     
     # 使用线程去监听设备状态，避开堵塞重量数据的读取
     def start_monitoring(self):
@@ -213,6 +211,10 @@ class WeightSensor:
         config_path = "./device_config.json"
         device_monitor = DeviceStatusMonitor(config_path)
         device_monitor.monitor_status(interval=0.03)
+        while device_monitor.read_device_status != '01':
+            time.sleep(1)
+
+        self.sample_weight(3)
         
     def close(self):
         if self.serial and self.serial.is_open:
@@ -224,31 +226,15 @@ class WeightSensor:
         self.logger("WeightSensor object deleted.")
 
 
-config_path = "./device_config.json"
-device_monitor = DeviceStatusMonitor(config_path)
-
 # Usage example:
 config_path = "./config.json"
 weight_sensor = WeightSensor(config_path)
 
-if device_monitor.connect():
-    duration = 3000
-    # device_monitor.monitor_status(interval=0.03)
-    end = time.time() + 3
-    while time.time() < end:
-        status = device_monitor.read_device_status()
-    # print(status)
-    weight_sensor.sample_weight(3000)
-else:
-    print("Failed to connect to the device.")
+weight_sensor.start_monitoring()
 
-# exit(909090)
-if device_monitor.read_device_status() == '01':
-    weight_sensor.sample_weight(3)
-
-if weight_sensor.connect():
-    # weight_sensor.set_weight_unit('kg')
-    stable_weight = weight_sensor.measure_weight(60, 2660)
-    print(f"Measured stable weight: {stable_weight} {weight_sensor.unit}")
-else:
-    print("Failed to connect to the weight sensor.")
+# if weight_sensor.connect():
+#     # weight_sensor.set_weight_unit('kg')
+#     stable_weight = weight_sensor.measure_weight(60, 2660)
+#     print(f"Measured stable weight: {stable_weight} {weight_sensor.unit}")
+# else:
+#     print("Failed to connect to the weight sensor.") 
